@@ -2,8 +2,8 @@
 #define GAME_PERSON_H
 
 #include <iostream>
-#include <game.h>
 
+#include "game.h"
 #include "object.h"
 #include "animation.h"
 #include "border_rect.h"
@@ -32,7 +32,7 @@ namespace Game {
         sf::Vector2i velocity;
     private:
         void update_velocity(Utils::Direction direction, sf::Vector2i &velocity);
-        void update_position(float elapsed_time, sf::Vector2i &velocity, sf::Vector2f &position);
+        void update_position(Game_state &game, float elapsed_time, sf::Vector2i &velocity, sf::Vector2f &position);
         void update_direction(float elapsed_time, sf::Vector2i &velocity, float &direction_time);
 
         void change_direction(float &direction_time, int except_direction = -1);

@@ -27,12 +27,15 @@ namespace Game {
         void unlock_objects_mutex();
 
         bool intersects_with_objects(const Object *target_object);
-        bool out_of_window();
+        bool out_of_area(sf::Vector2f &point);
+        bool out_of_area(sf::FloatRect &rect);
+
+        sf::Vector2f get_window_size();
 
         State state;
 
-        static const unsigned int width;
-        static const unsigned int height;
+        const unsigned int area_width = 3000;
+        const unsigned int area_height = 3000;
 
         int max_fps = 100;
         float sec_per_frame;

@@ -1,7 +1,6 @@
 #include <stdlib.h>
 
 #include "person.h"
-#include "game.h"
 
 using namespace Game;
 
@@ -21,12 +20,6 @@ Person::Person() : direction(), Object(sf::Vector2f(0.f, 0.f))
 
     sf::Vector2f size = animation->get_texture_size();
     border = new Border_rect(position, size);
-
-    /*for (int i = (int) position.x; i < (int) (position.x + size.x); i++) {
-        for (int j = (int) position.y; j < (int) (position.y + size.y); j++) {
-            global_map.set_value(i, j, (Object *) this);
-        }
-    }*/
 }
 
 void Person::draw(sf::RenderWindow &window) {
@@ -66,24 +59,13 @@ void Person::update_direction(float elapsed_time, sf::Vector2i &velocity, float 
     change_direction(this->direction_time);
 }
 
-void Person::update_position(float elapsed_time, sf::Vector2i &velocity, sf::Vector2f &position) {
+void Person::update_position(Game_state &game, float elapsed_time, sf::Vector2i &velocity, sf::Vector2f &position) {
     this->prev_position = this->position;
     position.x += (float) velocity.x * elapsed_time;
-    if (position.x < 0) {
-        position.x = 0.0f;
-        velocity.x = 0;
-    } else if (position.x > (float) Game_state::width) {
-        position.x = (float) Game_state::Game_state::width;
-        velocity.x = 0;
-    }
-
     position.y += (float) velocity.y * elapsed_time;
-    if (position.y < 0) {
-        position.y = 0.0f;
-        velocity.y = 0;
-    } else if (position.y > (float) Game_state::height) {
-        position.y = (float) Game_state::height;
-        velocity.y = 0;
+
+    if (game.out_of_area(position)) {
+        go_back();
     }
 }
 
@@ -95,13 +77,12 @@ void Person::update(Game_state &game, float elapsed_time, sf::Vector2f &mouse_po
     animation->update_current_frame(elapsed_time, this->velocity);
     animation->update_texture();
 
-    update_position(elapsed_time, this->velocity, this->position);
+    update_position(game, elapsed_time, this->velocity, this->position);
     border->update_position(position);
     animation->set_position(this->position);
 
     if (game.intersects_with_objects(this)) {
         go_back();
-        animation->set_position(this->position);
     }
 
     base_update(game, elapsed_time, mouse_position);
@@ -110,6 +91,7 @@ void Person::update(Game_state &game, float elapsed_time, sf::Vector2f &mouse_po
 void Person::go_back()
 {
     this->position = this->prev_position;
+    animation->set_position(this->position);
     change_direction(direction_time, direction.value);
 }
 

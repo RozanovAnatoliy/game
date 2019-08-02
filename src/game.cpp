@@ -3,9 +3,6 @@
 #include <thread>
 #include <interface.h>
 
-const unsigned int Game::Game_state::width = 800;
-const unsigned int Game::Game_state::height = 600;
-
 Game::Game_state::Game_state(std::vector<Object *> &_object, sf::RenderWindow &_window)
 {
     Game_state::objects = &_object;
@@ -42,7 +39,25 @@ bool Game::Game_state::intersects_with_objects(const Game::Object *target_object
     return false;
 }
 
-bool Game::Game_state::out_of_window()
+bool Game::Game_state::out_of_area(sf::Vector2f &point)
 {
-    return false;
+    sf::FloatRect area(sf::Vector2f(0.0f, 0.0f),
+                       sf::Vector2f((float) area_width, (float) area_height));
+    return !area.contains(point);
+}
+
+bool Game::Game_state::out_of_area(sf::FloatRect &rect)
+{
+    sf::FloatRect intersection;
+    sf::FloatRect area(sf::Vector2f(0.0f, 0.0f),
+                       sf::Vector2f((float) area_width, (float) area_height));
+    area.intersects(rect, intersection);
+    return (intersection.width != rect.width || intersection.height != rect.height);
+}
+
+sf::Vector2f Game::Game_state::get_window_size()
+{
+    sf::Vector2u size_u = window->getSize();
+    sf::Vector2f size_f = sf::Vector2f((float) size_u.x, (float) size_u.y);
+    return size_f;
 }

@@ -108,9 +108,7 @@ void handle_events(Game::Game_state &game, std::vector<Game::Object *> &objects,
 
 int main()
 {
-    std::vector<Game::Object *> objects;
-
-    sf::RenderWindow window(sf::VideoMode(Game::Game_state::width, Game::Game_state::height), "My Windows");
+    sf::RenderWindow window(sf::VideoMode::getFullscreenModes()[0], "My Windows", sf::Style::Fullscreen);
     window.setActive(false);
 
     std::vector<Game::Object *> objects;
@@ -120,8 +118,8 @@ int main()
 
     Game::Person person;
     Game::House house(sf::Vector2f(100., 100.));
-    Game::Interface interface(sf::Vector2f(0.0f, Game::Game_state::height * 0.7f),
-                              sf::Vector2f((float) Game::Game_state::width, (float) Game::Game_state::height * 0.3f));
+    Game::Interface interface(sf::Vector2f(0.0f, windows_size.y * 0.7f),
+                              sf::Vector2f(windows_size.x, windows_size.y * 0.3f));
 
     Game::View view(windows_size);
     window.setView(view.get_view());
