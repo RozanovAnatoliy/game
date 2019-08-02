@@ -73,10 +73,7 @@ void Interface_building_object::click_on(Game_state &game, sf::Vector2f &mouse_p
         bool intersects_with_objects = game.intersects_with_objects(Interface_building_object::object);
         if (!intersects_with_objects && !out_of_area) {
             Interface_building_object::clicked_on = false;
-
-            game.lock_objects_mutex();
             game.add_object(Interface_building_object::object);
-            game.unlock_objects_mutex();
 
             Object_manufacture manufacture;
             manufacture.get_object(Interface_building_object::type, &(Interface_building_object::object));
