@@ -45,7 +45,11 @@ void Interface_building_object::update(Game_state &game, sf::Vector2f &mouse_pos
         sf::Vector2f new_position = mouse_position - Interface_building_object::object->get_size() * 0.5f;
         Interface_building_object::object->set_position(new_position);
 
-        if (game.intersects_with_objects(Interface_building_object::object)) {
+        sf::FloatRect object_bounds = object->get_global_bounds();
+        bool out_of_area = game.out_of_area(object_bounds);
+        bool intersects_with_objects = game.intersects_with_objects(Interface_building_object::object);
+
+        if (intersects_with_objects || out_of_area) {
             Interface_building_object::object->draw_bounds(true, sf::Color::Red);
         } else {
             Interface_building_object::object->draw_bounds(true);
@@ -64,7 +68,10 @@ void Interface_building_object::click_on(Game_state &game, sf::Vector2f &mouse_p
         Interface_building_object::clicked_on = true;
         game.state = State::BUILDING_OBJECT;
     } else {
-        if (!game.intersects_with_objects(Interface_building_object::object)) {
+        sf::FloatRect object_bounds = object->get_global_bounds();
+        bool out_of_area = game.out_of_area(object_bounds);
+        bool intersects_with_objects = game.intersects_with_objects(Interface_building_object::object);
+        if (!intersects_with_objects && !out_of_area) {
             Interface_building_object::clicked_on = false;
 
             game.lock_objects_mutex();
