@@ -77,6 +77,26 @@ void rendering_thread(Game::Game_state &game, std::vector<Game::Object *> &objec
     }
 }
 
+void key_pressed(sf::Keyboard::Key code, Game::View &view, sf::RenderWindow &window)
+{
+    switch (code) {
+        case sf::Keyboard::Escape:
+            window.close();
+            break;
+        case sf::Keyboard::P:
+            view.zoom(0.99f);
+            break;
+        case sf::Keyboard::M:
+            view.zoom(1.01f);
+            break;
+        case sf::Keyboard::L:
+            view.default_view();
+            break;
+        default:
+            break;
+    }
+}
+
 void handle_events(Game::Game_state &game, std::vector<Game::Object *> &objects, Game::Interface &interface,
                    Game::View &view, sf::RenderWindow &window)
 {
@@ -98,6 +118,9 @@ void handle_events(Game::Game_state &game, std::vector<Game::Object *> &objects,
 
                         interface.click_on(game, mouse_position);
                     }
+                    break;
+                case sf::Event::KeyPressed:
+                    key_pressed(event.key.code, view, window);
                     break;
                 default:
                     break;
