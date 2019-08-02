@@ -45,8 +45,8 @@ namespace Game {
 
         sf::Font font;
         sf::Color color = sf::Color::Black;
-        const unsigned int character_size = 15;
-        const unsigned int title_character_size = 20;
+        const unsigned int character_size = 20;
+        const unsigned int title_character_size = 25;
     };
 
     class Interface_object {
