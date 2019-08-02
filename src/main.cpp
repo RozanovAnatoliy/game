@@ -11,6 +11,7 @@
 #include "game.h"
 #include "house.h"
 #include "interface.h"
+#include "view.h"
 
 #include "range.h"
 
@@ -25,8 +26,10 @@ void update(Game::Game_state &game, std::vector<Game::Object *> &objects, Game::
     }
 }
 
-void render(sf::RenderWindow &window, std::vector<Game::Object *> &objects, Game::Interface &interface)
+void render(sf::RenderWindow &window, Game::View &view, std::vector<Game::Object *> &objects,
+            Game::Interface &interface)
 {
+    window.setView(view.get_view());
     window.clear(sf::Color::Black);
 
     for (Game::Object *object : objects) {
@@ -52,7 +55,7 @@ void check_click_on_object(std::vector<Game::Object *> &objects, Game::Interface
 }
 
 void rendering_thread(Game::Game_state &game, std::vector<Game::Object *> &objects, Game::Interface &interface,
-                      sf::RenderWindow &window)
+                      Game::View &view, sf::RenderWindow &window)
 {
     window.setActive(true);
     sf::Clock clock;
@@ -62,7 +65,7 @@ void rendering_thread(Game::Game_state &game, std::vector<Game::Object *> &objec
 
         game.lock_objects_mutex();
         update(game, objects, interface, game.sec_per_frame, window);
-        render(window, objects, interface);
+        render(window, view, objects, interface);
         game.unlock_objects_mutex();
 
         sf::Time time2 = clock.restart();
@@ -75,7 +78,7 @@ void rendering_thread(Game::Game_state &game, std::vector<Game::Object *> &objec
 }
 
 void handle_events(Game::Game_state &game, std::vector<Game::Object *> &objects, Game::Interface &interface,
-                   sf::RenderWindow &window)
+                   Game::View &view, sf::RenderWindow &window)
 {
     while(window.isOpen()) {
         sf::Event event;
@@ -110,22 +113,28 @@ int main()
     sf::RenderWindow window(sf::VideoMode(Game::Game_state::width, Game::Game_state::height), "My Windows");
     window.setActive(false);
 
+    std::vector<Game::Object *> objects;
+    Game::Game_state game(objects, window);
+
+    sf::Vector2f windows_size = game.get_window_size();
+
     Game::Person person;
     Game::House house(sf::Vector2f(100., 100.));
     Game::Interface interface(sf::Vector2f(0.0f, Game::Game_state::height * 0.7f),
                               sf::Vector2f((float) Game::Game_state::width, (float) Game::Game_state::height * 0.3f));
 
-    Game::Game_state game(objects, window);
+    Game::View view(windows_size);
+    window.setView(view.get_view());
 
     objects.push_back(&house);
     objects.push_back(&person);
     objects.push_back(&interface);
 
     std::thread thread_game(rendering_thread, std::ref(game), std::ref(objects), std::ref(interface),
-                            std::ref(window));
+                            std::ref(view), std::ref(window));
     thread_game.detach();
 
-    handle_events(game, objects, interface, window);
+    handle_events(game, objects, interface, view, window);
 
     return 0;
 }
